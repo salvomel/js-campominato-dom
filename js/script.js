@@ -7,9 +7,12 @@
 // Al termine della partita il software deve comunicare il punteggio, 
 // cioè il numero di volte che l’utente ha cliccato su una cella che non era una b.
 
+
 // Funzione CLICK to PLAY
 document.getElementById('play').addEventListener('click', startGame);
 function startGame() {
+    // Game options
+    const numberOfBombs = 16;
 
     // CREO LA GRIGLIA CON GLI SQUARE
     // Array di numeri in base al livello
@@ -25,6 +28,16 @@ function startGame() {
         numberOfSquares = 49;
         gridDimension = 7;
     }
+
+    // Genero array di 16 bombe
+    const bombsArray = generateBombs(numberOfSquares, numberOfBombs);
+    console.log(bombsArray);
+
+    // Calcolo num max tentativi che si possono fare
+    const maxTries = numberOfSquares - bombsArray.length;
+
+    // Genero array che contiene bombe non azzeccate
+    const rightTriesArray = [];
     
     // Richiamo funzione Genera Numeri nell Griglia
     let generatedNumbers = generateGridNumbers(numberOfSquares);
@@ -44,10 +57,27 @@ function startGame() {
         // Aggiungo l'elemento alla griglia
         myGrid.appendChild(newSquare);
     }
-    
-    // AL CLICK SU OGNI SQUARE AGGIUNGO LA CLASSE "ACTIVE" ALLO SQUARE
+
+    // _____________________
+    // | PROJECT FUNCTIONS |- Da lasciare dentro la funzione start game per far sì che vengano lette (funzioni impure)
+    // Funzione Click
     function squareClick() {
-        this.classList.add('active');
+        // Per leggerre il numero che c'è dentro la cella
+        const clickedNumber = parseInt ( this.querySelector('span').textContent );
+        
+        // Se numero dentro array bombe il gioco finisce
+        if (bombsArray.includes(clickedNumber)) {
+            // Aggiungo classe 'bomb' alla cella e diventa rossa
+            this.classList.add('bomb');
+        } else {
+            // Aggiungo classe 'active' alla cella e diventa azzurra
+            this.classList.add('active');
+            // Per far sì che la cella non venga più cliccata dopo il primo click
+            this.style.pointerEvents = 'none';
+
+            // Numero selezionato viene aggiunto all'array bombe non azzeccate
+            rightTriesArray.push(clickedNumber);
+        }
     }
 }
 
@@ -84,3 +114,29 @@ function generateGridItem(number, cellDimension) {
     return newSquare;
 }
 
+// FUNZIONI PER LE BOMBE
+// Genero array di bombe
+
+// maxRangeNumber: numero max di bombe in base al numero di elementi della griglia
+// numberOfBombs: numero bombe
+// return: array bombe
+function generateBombs(maxRangeNumber, numberOfBombs) {
+    const arrayBombs = [];
+    // Finché array non ha numberOfBombs elementi
+    while (arrayBombs.length < numberOfBombs) {
+        // Genero numero random
+        const randomNumber = getRndInteger(1, maxRangeNumber);
+
+        // Se elemento non è già presente lo pusho
+        if(!arrayBombs.includes(randomNumber)) {
+            arrayBombs.push(randomNumber);
+        }
+    }
+    return arrayBombs;
+}
+
+// Funzione genera numeri random
+function getRndInteger(min, max) {
+    return Math.floor(Math.random() * (max - min) ) + min;
+  }
+  

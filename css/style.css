@@ -77,6 +77,11 @@ main {
     color: white;
 }
 
+.square.bomb {
+    background-color: red;
+    color: white;
+}
+
 /* FOOTER */
 footer {
     width: 80%;
