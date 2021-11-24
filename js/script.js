@@ -11,6 +11,9 @@
 // Funzione CLICK to PLAY
 document.getElementById('play').addEventListener('click', startGame);
 function startGame() {
+    // Hidden all'intro text
+    document.getElementById('intro-text').classList.add('hidden');
+
     // Game options
     const numberOfBombs = 16;
 
@@ -42,10 +45,16 @@ function startGame() {
     // Richiamo funzione Genera Numeri nell Griglia
     let generatedNumbers = generateGridNumbers(numberOfSquares);
     
-    // Per ogni numero nell'array creo una cella e la appendo al grid
+    // Griglia
     const myGrid = document.getElementById('grid');
+    // Tolgo hidden alla gliglia al click
+    myGrid.classList.remove('hidden');
+    // Reset gliglia al click
     myGrid.innerHTML = '';
-    
+    // Nascondo il messaggio finale al click
+    document.getElementById('final-text').classList.add('hidden');
+
+    // Per ogni numero nell'array creo una cella e la appendo al grid
     for(let i = 0; i < generatedNumbers.length; i++) {
         
         const thisNumber = generatedNumbers[i];
@@ -69,6 +78,7 @@ function startGame() {
         if (bombsArray.includes(clickedNumber)) {
             // Aggiungo classe 'bomb' alla cella e diventa rossa
             this.classList.add('bomb');
+            gameOver('lose');
         } else {
             // Aggiungo classe 'active' alla cella e diventa azzurra
             this.classList.add('active');
@@ -77,6 +87,35 @@ function startGame() {
 
             // Numero selezionato viene aggiunto all'array bombe non azzeccate
             rightTriesArray.push(clickedNumber);
+
+            // Altro if: gioco finisce se array numeri azzeccati >= numero max tentativi
+            if (rightTriesArray.length >= maxTries) {
+                gameOver('win');
+            }
+        }
+    }
+
+    // Funzione GAMEOVER
+    // winLose: 'win' se si vince, 'lose' se si perde
+    function gameOver(winLose) {
+        let message;
+        // se si vince 
+        if (winLose === 'win') {
+            message = 'Hai vinto!'
+        // se si perde
+        } else {
+            message = 'Hai perso! Ma hai azzeccato ' + rightTriesArray.length + ' tentativi';
+        }
+
+        // Messaggio finale da mostrare
+        document.getElementById('final-text').innerHTML = message;
+        document.getElementById('final-text').classList.remove('hidden');
+
+        // Per rendere tutte le celle non più cliccabili alla fine del gioco
+        const allSquares = document.getElementsByClassName('square');
+        for ( let i=0; i < allSquares.length; i++) {
+            const thisSquare = allSquares[i];
+            thisSquare.style.pointerEvents = 'none';
         }
     }
 }
@@ -139,4 +178,5 @@ function generateBombs(maxRangeNumber, numberOfBombs) {
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min) ) + min;
   }
-  
+
+
